@@ -56,6 +56,7 @@ public:
 	* @return false if unsuccessful (i.e. the int is already in tree)
 	*/
 	bool add(int data);
+    bool insert(Node *&tree, int val);
 
 	/*
 	* Attempts to remove the given int from the AVL tree
