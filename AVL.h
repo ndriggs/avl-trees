@@ -34,7 +34,7 @@ public:
         }
         
     };
-    Node *root;
+    
 	AVL();
 	~AVL();
 
@@ -72,4 +72,13 @@ public:
 	*/
 	void clear();
 	void clear_up(Node *&tree);
+private:
+    Node *root;
+    int isBalanced(Node *tree);
+    void updateHeight(Node *tree);
+    int getHeight(Node *tree);
+    int max(int a, int b);
+    void balanceNode(Node *&tree);
+    void rightRotate(Node *&tree);
+    void leftRotate(Node *&tree);
 };

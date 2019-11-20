@@ -34,10 +34,36 @@ bool AVL::add(int data){
 }
 
 bool AVL::insert(Node *&tree, int val){
+    bool didInsert;
     
+    //base case 1, we find where we want to insert
+    if(tree == NULL){
+        tree = new Node(val);
+        return true; //we successfully added it
+    }
     
-    return true;
+    //base case 2, the value is already in the tree
+    if(tree->value == val)
+        return false; //can't add it, it's already there
+        
+    //RECURSION TIME    
+    if(val < tree->value){
+        didInsert = insert(tree->left, val);
+    }
+    else{
+        didInsert = insert(tree->right, val);
+    }
+    
+    //we've inserted it, now check if it's balanced
+    if(!isBalanced(tree)){
+        balanceNode(tree);
+        updateHeight(tree);
+    }
+    return didInsert;
 }
+
+///functions: isBalanced, updateHeight, getHeight, max, balanceNode, 
+///rightRotate, leftRotate
 
 /*
 * Attempts to remove the given int from the AVL tree
@@ -108,4 +134,18 @@ void AVL::clear_up(Node *&tree){
     clear_up(tree->left);
     clear_up(tree->right);
     delete tree;
+}
+
+int AVL::isBalanced(Node *tree, bool firstTime){
+    if(!firstTime){
+        if((tree->left->height - tree->right->height) > 1)
+            return 1;
+        else
+            return 0;
+    }
+        
+    if((tree->left->height - tree->right->height) > 1) //left imbalanced
+        return 1 + isBalanced(tree->left, false);
+    else if((tree->left->height - tree->right->height) < -1) //right imbalanced
+        return 3 + isBalanced(tree->right, false);
 }
