@@ -38,7 +38,9 @@ bool AVL::insert(Node *&tree, int val){
     
     //base case 1, we find where we want to insert
     if(tree == NULL){
+        cout << "in the tree == NULL statement" << endl;
         tree = new Node(val);
+        cout << "new Node created" << endl;
         return true; //we successfully added it
     }
     
@@ -53,10 +55,12 @@ bool AVL::insert(Node *&tree, int val){
     else{
         didInsert = insert(tree->right, val);
     }
-    
+    cout << "about to check if balanced" << endl;
     //we've inserted it, now check if it's balanced
-    if(!isBalanced(tree)){
-        balanceNode(tree);
+    int balanceCase = isBalanced(tree, true); //true means it's our first time
+                                              //entering the function
+    if(balanceCase > 0){ //returns 0 if balanced
+        balanceNode(tree, balanceCase);
         updateHeight(tree);
     }
     return didInsert;
@@ -137,7 +141,9 @@ void AVL::clear_up(Node *&tree){
 }
 
 int AVL::isBalanced(Node *tree, bool firstTime){
-    if(!firstTime){
+    cout << "in is balanced function" << endl;
+    if(!firstTime){ //stops second time through, only recurses once
+        cout << "in isBalanced for the 2nd time" << endl;
         if((tree->left->height - tree->right->height) > 1)
             return 1;
         else
@@ -145,7 +151,78 @@ int AVL::isBalanced(Node *tree, bool firstTime){
     }
         
     if((tree->left->height - tree->right->height) > 1) //left imbalanced
-        return 1 + isBalanced(tree->left, false);
+        return 1 + isBalanced(tree->left, false); //false = is not first time
+                                                  //in function
     else if((tree->left->height - tree->right->height) < -1) //right imbalanced
         return 3 + isBalanced(tree->right, false);
+    else
+        return 0; //tree is balanced
+        
+    //return value key:
+    // 0 = balanced
+    // 1 = left-right imbalance
+    // 2 = left-left imbalance
+    // 3 = right-left imbalance
+    // 4 = right-right imbalance
+}
+
+void AVL::updateHeight(Node *tree){
+    tree->height = 1 + max(getHeight(tree->left), getHeight(tree->right));
+}
+
+int AVL::getHeight(Node *tree){
+    if(tree == NULL)
+        return -1;
+    else
+        return tree->height;
+}
+
+int AVL::max(int a, int b){
+    if(a > b)
+        return a;
+    else
+        return b;
+}
+
+void AVL::balanceNode(Node *&tree, int imbalanceCase){
+    switch(imbalanceCase){
+        case 1: // left-right imbalance
+            leftRotate(tree->left);
+            rightRotate(tree);
+            break;
+        case 2: // left-left imbalance
+            rightRotate(tree);
+            break;
+        case 3: // right-left imbalance
+            rightRotate(tree->right);
+            leftRotate(tree);
+            break;
+        case 4: // right-right imbalance
+            leftRotate(tree);
+            break;
+    }
+}
+
+void AVL::rightRotate(Node *&tree){
+    //tree is the matriarch because it is passed by reference
+    Node *dethroned = tree; //dethroned is a pointer to the Node tree points to
+    Node *heir = tree->left; 
+    tree = heir;
+    dethroned->left = heir->right;
+    heir->right = dethroned;
+    updateHeight(tree);
+    updateHeight(dethroned);
+    updateHeight(dethroned->left);
+}
+
+void AVL::leftRotate(Node *&tree){
+    //tree is the matriarch because it is passed by reference
+    Node *dethroned = tree; //dethroned is a pointer to the Node tree points to
+    Node *heir = tree->right; 
+    tree = heir; //new king in town
+    dethroned->right = heir->left;
+    heir->left = dethroned;
+    updateHeight(tree);
+    updateHeight(dethroned);
+    updateHeight(dethroned->right);
 }

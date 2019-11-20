@@ -11,6 +11,7 @@ class AVL : public AVLInterface {
 public:
     struct Node : public NodeInterface {
         Node(int data){
+            cout << "in Node constructor" << endl;
             value = data;
             left = NULL;
             right = NULL;
@@ -72,13 +73,13 @@ public:
 	*/
 	void clear();
 	void clear_up(Node *&tree);
-private:
+//private:
     Node *root;
-    int isBalanced(Node *tree);
+    int isBalanced(Node *tree, bool firstTime);
     void updateHeight(Node *tree);
     int getHeight(Node *tree);
     int max(int a, int b);
-    void balanceNode(Node *&tree);
+    void balanceNode(Node *&tree, int imbalanceCase);
     void rightRotate(Node *&tree);
     void leftRotate(Node *&tree);
 };
