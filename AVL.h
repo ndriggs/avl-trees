@@ -11,7 +11,6 @@ class AVL : public AVLInterface {
 public:
     struct Node : public NodeInterface {
         Node(int data){
-            cout << "in Node constructor" << endl;
             value = data;
             left = NULL;
             right = NULL;

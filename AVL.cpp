@@ -38,9 +38,7 @@ bool AVL::insert(Node *&tree, int val){
     
     //base case 1, we find where we want to insert
     if(tree == NULL){
-        cout << "in the tree == NULL statement" << endl;
         tree = new Node(val);
-        cout << "new Node created" << endl;
         return true; //we successfully added it
     }
     
@@ -55,14 +53,16 @@ bool AVL::insert(Node *&tree, int val){
     else{
         didInsert = insert(tree->right, val);
     }
-    cout << "about to check if balanced" << endl;
+    updateHeight(tree);
     //we've inserted it, now check if it's balanced
     int balanceCase = isBalanced(tree, true); //true means it's our first time
                                               //entering the function
+    //cout << "balanceCase: " << balanceCase << endl << endl;
     if(balanceCase > 0){ //returns 0 if balanced
         balanceNode(tree, balanceCase);
-        updateHeight(tree);
+        cout << "attempting to balanceNode" << endl;
     }
+    updateHeight(tree);
     return didInsert;
 }
 
@@ -141,46 +141,20 @@ void AVL::clear_up(Node *&tree){
 }
 
 int AVL::isBalanced(Node *tree, bool firstTime){
-    cout << "in is balanced function" << endl;
-    bool leftNull, rightNull;
     
-    //first we have to catch a few base cases where the children 
-    //are NULL in order to avoid a seg fault
-    cout << "a" << endl;
-    if((tree->left == NULL) && (tree->right == NULL))
-        return 0; //tree is balanced
-    if(tree->left == NULL){
-        if(tree->right->height > 0){
-            if(firstTime)
-                return 3 + isBalanced(tree->right, false);
-            else
-                return 0;
-        }
-    }
-    cout << "b" << endl;
-    if(tree->right == NULL){
-        if(tree->left->height > 0){
-            if(firstTime)
-                return 1 + isBalanced(tree->left, false);
-            else
-                return 1;
-        }
-    }
-    cout << "c" << endl;
     if(!firstTime){ //stops second time through, only recurses once, "base case"
-        cout << "in isBalanced for the 2nd time" << endl;
-        if((tree->left->height - tree->right->height) > 1)
+        if((getHeight(tree->left) - getHeight(tree->right)) > 1)
             return 1;
         else
             return 0;
     }
-     
-    
-        
-    if((tree->left->height - tree->right->height) > 1) //left imbalanced
+    /**cout << "height of left tree: " << getHeight(tree->left) << endl;
+    cout << "height of right tree: " << getHeight(tree->right) << endl;
+    cout << "difference: " << getHeight(tree->left) - getHeight(tree->right) << endl;**/
+    if((getHeight(tree->left) - getHeight(tree->right)) > 1) //left imbalanced
         return 1 + isBalanced(tree->left, false); //false = is not first time
                                                   //entering the function
-    else if((tree->left->height - tree->right->height) < -1) //right imbalanced
+    else if((getHeight(tree->left) - getHeight(tree->right)) < -1) //right imbalanced
         return 3 + isBalanced(tree->right, false);
     else
         return 0; //tree is balanced
@@ -194,6 +168,8 @@ int AVL::isBalanced(Node *tree, bool firstTime){
 }
 
 void AVL::updateHeight(Node *tree){
+    if(tree == NULL)
+        return; //narrow escape of a seg fault
     tree->height = 1 + max(getHeight(tree->left), getHeight(tree->right));
 }
 
@@ -231,6 +207,7 @@ void AVL::balanceNode(Node *&tree, int imbalanceCase){
 }
 
 void AVL::rightRotate(Node *&tree){
+    cout << "rightRotate" << endl;
     //tree is the matriarch because it is passed by reference
     Node *dethroned = tree; //dethroned is a pointer to the Node tree points to
     Node *heir = tree->left; 
@@ -243,9 +220,14 @@ void AVL::rightRotate(Node *&tree){
 }
 
 void AVL::leftRotate(Node *&tree){
+    cout << "leftRotate" << endl;
+    
+    //First establish the matriarch, dethroned, and heir pointers
     //tree is the matriarch because it is passed by reference
     Node *dethroned = tree; //dethroned is a pointer to the Node tree points to
-    Node *heir = tree->right; 
+    Node *heir = tree->right; //heir is to the right of the tree
+    
+    //now let's start rotating!
     tree = heir; //new king in town
     dethroned->right = heir->left;
     heir->left = dethroned;
