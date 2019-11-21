@@ -142,17 +142,44 @@ void AVL::clear_up(Node *&tree){
 
 int AVL::isBalanced(Node *tree, bool firstTime){
     cout << "in is balanced function" << endl;
-    if(!firstTime){ //stops second time through, only recurses once
+    bool leftNull, rightNull;
+    
+    //first we have to catch a few base cases where the children 
+    //are NULL in order to avoid a seg fault
+    cout << "a" << endl;
+    if((tree->left == NULL) && (tree->right == NULL))
+        return 0; //tree is balanced
+    if(tree->left == NULL){
+        if(tree->right->height > 0){
+            if(firstTime)
+                return 3 + isBalanced(tree->right, false);
+            else
+                return 0;
+        }
+    }
+    cout << "b" << endl;
+    if(tree->right == NULL){
+        if(tree->left->height > 0){
+            if(firstTime)
+                return 1 + isBalanced(tree->left, false);
+            else
+                return 1;
+        }
+    }
+    cout << "c" << endl;
+    if(!firstTime){ //stops second time through, only recurses once, "base case"
         cout << "in isBalanced for the 2nd time" << endl;
         if((tree->left->height - tree->right->height) > 1)
             return 1;
         else
             return 0;
     }
+     
+    
         
     if((tree->left->height - tree->right->height) > 1) //left imbalanced
         return 1 + isBalanced(tree->left, false); //false = is not first time
-                                                  //in function
+                                                  //entering the function
     else if((tree->left->height - tree->right->height) < -1) //right imbalanced
         return 3 + isBalanced(tree->right, false);
     else
@@ -162,8 +189,8 @@ int AVL::isBalanced(Node *tree, bool firstTime){
     // 0 = balanced
     // 1 = left-right imbalance
     // 2 = left-left imbalance
-    // 3 = right-left imbalance
-    // 4 = right-right imbalance
+    // 3 = right-right imbalance
+    // 4 = right-left imbalance
 }
 
 void AVL::updateHeight(Node *tree){
@@ -193,11 +220,11 @@ void AVL::balanceNode(Node *&tree, int imbalanceCase){
         case 2: // left-left imbalance
             rightRotate(tree);
             break;
-        case 3: // right-left imbalance
-            rightRotate(tree->right);
+        case 3: // right-right imbalance
             leftRotate(tree);
             break;
-        case 4: // right-right imbalance
+        case 4: // right-left imbalance
+            rightRotate(tree->right);
             leftRotate(tree);
             break;
     }

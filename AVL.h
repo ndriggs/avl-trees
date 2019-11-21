@@ -15,6 +15,7 @@ public:
             value = data;
             left = NULL;
             right = NULL;
+            height = 0;
         }
         int value;
         Node *left, *right;
