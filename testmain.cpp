@@ -2,22 +2,31 @@
 
 using namespace std;
 
-int main(){
+int main(int argc, char *argv[]){
+    int a, b, c, d, e, f, g;
+    a = atoi(argv[1]);
+    b = atoi(argv[2]);
+    c = atoi(argv[3]);
+    d = atoi(argv[4]);
+    e = atoi(argv[5]);
+    f = atoi(argv[6]);
+    g = atoi(argv[7]);
+    
     AVL set;
-    cout << "adding 1" << endl;
-    set.add(1);
-    cout << "adding 2" << endl;
-    set.add(2);
-    cout << "adding 3" << endl;
-    set.add(3);
-    cout << "adding 4" << endl;
-    set.add(4);
-    cout << "adding 5" << endl;
-    set.add(5);
-    cout << "adding 6" << endl;
-    set.add(6);
-    cout << "adding 10" << endl;
-    set.add(10);
+    cout << "adding " << a << endl;
+    set.add(a);
+    cout << "adding " << b << endl;
+    set.add(b);
+    cout << "adding " << c << endl;
+    set.add(c);
+    cout << "adding " << d << endl;
+    set.add(d);
+    cout << "adding " << e << endl;
+    set.add(e);
+    cout << "adding " << f << endl;
+    set.add(f);
+    cout << "adding " << g << endl;
+    set.add(g);
     
     
     return 0;

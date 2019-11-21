@@ -1,4 +1,5 @@
 #include "AVL.h"
+#include <cmath>
 
 using namespace std;
 
@@ -38,6 +39,7 @@ bool AVL::insert(Node *&tree, int val){
     
     //base case 1, we find where we want to insert
     if(tree == NULL){
+        //cout << "adding " << val << endl;
         tree = new Node(val);
         return true; //we successfully added it
     }
@@ -53,16 +55,16 @@ bool AVL::insert(Node *&tree, int val){
     else{
         didInsert = insert(tree->right, val);
     }
-    updateHeight(tree);
+    
     //we've inserted it, now check if it's balanced
+    updateHeight(tree);
     int balanceCase = isBalanced(tree, true); //true means it's our first time
                                               //entering the function
-    //cout << "balanceCase: " << balanceCase << endl << endl;
     if(balanceCase > 0){ //returns 0 if balanced
         balanceNode(tree, balanceCase);
-        cout << "attempting to balanceNode" << endl;
+        updateHeight(tree);
     }
-    updateHeight(tree);
+    
     return didInsert;
 }
 
@@ -81,6 +83,8 @@ bool AVL::remove(int data){
 }
 
 bool AVL::take_away(Node *&tree, int data){
+    bool removed;
+    
     //base case 1
     if(tree == NULL) //couldn't find it
         return false; 
@@ -119,10 +123,21 @@ bool AVL::take_away(Node *&tree, int data){
     //RECURSION TIME
     //case 1: value is less than
     if(data < tree->value)
-        return take_away(tree->left, data);
+        removed = take_away(tree->left, data);
     //case 2: value is greater than
     else 
-        return take_away(tree->right, data);
+        removed = take_away(tree->right, data);
+        
+    //Balance it on it's way back up!
+    updateHeight(tree);
+    int balanceCase = isBalanced(tree, true);//true=it's our first time 
+                                            //entering the function
+    if(balanceCase > 0){ //returns 0 if it's balanced
+        balanceNode(tree, balanceCase);
+        updateHeight(tree);
+    } 
+    return removed;
+    
 }
 
 /*
@@ -130,6 +145,7 @@ bool AVL::take_away(Node *&tree, int data){
 */
 void AVL::clear(){
     clear_up(root);
+    root = NULL;
 }
 
 void AVL::clear_up(Node *&tree){
@@ -143,7 +159,7 @@ void AVL::clear_up(Node *&tree){
 int AVL::isBalanced(Node *tree, bool firstTime){
     
     if(!firstTime){ //stops second time through, only recurses once, "base case"
-        if((getHeight(tree->left) - getHeight(tree->right)) > 1)
+        if((getHeight(tree->left) - getHeight(tree->right)) >= 1)
             return 1;
         else
             return 0;
@@ -207,7 +223,7 @@ void AVL::balanceNode(Node *&tree, int imbalanceCase){
 }
 
 void AVL::rightRotate(Node *&tree){
-    cout << "rightRotate" << endl;
+    //cout << "rightRotate" << endl;
     //tree is the matriarch because it is passed by reference
     Node *dethroned = tree; //dethroned is a pointer to the Node tree points to
     Node *heir = tree->left; 
@@ -220,8 +236,8 @@ void AVL::rightRotate(Node *&tree){
 }
 
 void AVL::leftRotate(Node *&tree){
-    cout << "leftRotate" << endl;
-    
+    //cout << "leftRotate" << endl;
+    //cout << "tree value: " << tree->value << endl;
     //First establish the matriarch, dethroned, and heir pointers
     //tree is the matriarch because it is passed by reference
     Node *dethroned = tree; //dethroned is a pointer to the Node tree points to
@@ -229,7 +245,7 @@ void AVL::leftRotate(Node *&tree){
     
     //now let's start rotating!
     tree = heir; //new king in town
-    dethroned->right = heir->left;
+    dethroned->right = heir->left;//******the problem line
     heir->left = dethroned;
     updateHeight(tree);
     updateHeight(dethroned);
