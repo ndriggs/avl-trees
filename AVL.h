@@ -75,7 +75,12 @@ public:
 	void clear_up(Node *&tree);
 //private:
     Node *root;
-    int isBalanced(Node *tree, bool firstTime);
+    //isBalanced @param
+    //@firstTime allows us to iterate through exactly once, passing
+    //"false" our second time
+    //@rightLeft tells us whether the imbalance of the first Node is 
+    //right or left. This helps with tie-breaking for the child Node
+    int isBalanced(Node *tree, bool firstTime, bool rightLeft = true);
     void updateHeight(Node *tree);
     int getHeight(Node *tree);
     int max(int a, int b);

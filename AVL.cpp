@@ -116,6 +116,17 @@ bool AVL::take_away(Node *&tree, int data){
             
             //lastly, delete the old location of the in order predecessor
             take_away(tree->left, newKing);
+            
+            //now we have to check and see if it's still balanced after 
+            //these changes before going back and out through the recursion
+            updateHeight(tree);
+            int balanceCase = isBalanced(tree, true);//true=it's our first time 
+                                                     //entering the function
+            if(balanceCase > 0){ //returns 0 if it's balanced
+            balanceNode(tree, balanceCase);
+            updateHeight(tree);
+            }
+
             return true; //Node was successfully deleted
         }
     }
@@ -156,11 +167,27 @@ void AVL::clear_up(Node *&tree){
     delete tree;
 }
 
-int AVL::isBalanced(Node *tree, bool firstTime){
+//isBalanced @param
+//@firstTime allows us to iterate through exactly once, passing
+//"false" our second time
+//@rightLeft tells us whether the imbalance of the first Node is 
+//right or left. This helps with tie-breaking for the child Node
+
+int AVL::isBalanced(Node *tree, bool firstTime, bool rightLeft){
     
     if(!firstTime){ //stops second time through, only recurses once, "base case"
-        if((getHeight(tree->left) - getHeight(tree->right)) >= 1)
+        if((getHeight(tree->left) - getHeight(tree->right)) >= 1)//if it's balanced on the second tree
             return 1;
+        else if((getHeight(tree->left) - getHeight(tree->right)) == 0){
+            //this is the tie-breaker, when the child Node is balanced.
+            //in this case we'll go with whatever imbalance the parent has,
+            //as indicated by our "rightLeft" parameter, true being right
+            //and false being left
+            if(rightLeft)
+                return 0;
+            else
+                return 1;
+        }
         else
             return 0;
     }
@@ -168,10 +195,10 @@ int AVL::isBalanced(Node *tree, bool firstTime){
     cout << "height of right tree: " << getHeight(tree->right) << endl;
     cout << "difference: " << getHeight(tree->left) - getHeight(tree->right) << endl;**/
     if((getHeight(tree->left) - getHeight(tree->right)) > 1) //left imbalanced
-        return 1 + isBalanced(tree->left, false); //false = is not first time
+        return 1 + isBalanced(tree->left, false, false); //false = is not first time
                                                   //entering the function
     else if((getHeight(tree->left) - getHeight(tree->right)) < -1) //right imbalanced
-        return 3 + isBalanced(tree->right, false);
+        return 3 + isBalanced(tree->right, false, true);
     else
         return 0; //tree is balanced
         
